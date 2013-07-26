@@ -1,16 +1,16 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
-from CSDataManager import CSDataManager
 import urlparse
 import cgi
-# import logging.handlers
+import logging.handlers
 import json
 import sqlite3
 
 
 class CSRequestHandler(BaseHTTPRequestHandler):
 
-	dataManager = CSDataManager()
-	# logger = logging.getLogger('http_server')
+	def __init__(self, *args):
+		self.logger = logging.getLogger('http_server.request_handler')
+		BaseHTTPRequestHandler.__init__(self, *args)
 
 	# ----------------------------------------------------------------------------------------------
 
@@ -19,15 +19,18 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 		path = self.path.split('?')
 		url = path[0]
 		params = urlparse.parse_qs(path[1])
+		resource = url.split('/')[-1]
 		
 		# Reject invalid urls
 		if (self.url_is_valid(url) is False):
 			self.cs_response(403, 'Invalid URL')
 			return
 
+		
+
 		try:
 			# Get records from data manager
-			records = self.dataManager.get_records(params)
+			records = self.server.dataManager.get_records(resource, params)
 		except sqlite3.Error as e:
 			self.cs_response(500, 'Internal server error: ' + str(e.args[0]), 'text/html')
 			return
@@ -62,12 +65,12 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 		data = urlparse.parse_qs(self.rfile.read(length), keep_blank_values=1)
 
 		try:
-			self.dataManager.post_record(data)
+			self.server.dataManager.post_record(data)
 		except Exception as e:
 			self.cs_response(400, 'Bad request: ' + str(e.args[0]), 'text/html')
 			return
 
-		# self.logger.info('Record has been added successfully')
+		self.logger.info('Record has been added successfully')
 		
 
 		self.send_response(200)
@@ -78,12 +81,8 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 	# ----------------------------------------------------------------------------------------------
 	
 	def do_PUT(self):
-		print "----- SOMETHING WAS PUT!! ------"
-		print self.headers
-		length = int(self.headers['Content-Length'])
-		content = self.rfile.read(length)
+		self.logger.debug("----- SOMETHING WAS PUT!! ------")
 		self.send_response(200)
-		print content
 
 	# ----------------------------------------------------------------------------------------------
 	
@@ -93,7 +92,7 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 	# ----------------------------------------------------------------------------------------------
 
 	def cs_response(self, code, message, content_type='application/json'):
-		# self.logger.debug('cs_response: ' + str(code) + ' ' + str(message))
+		self.logger.debug('cs_response: ' + str(code) + ' ' + str(message))
 		self.send_response(code, message)
 		self.send_header('Content-Type', content_type)
 		self.end_headers()
@@ -111,3 +110,10 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 		return {
 			'application/json, application/x-www-form-urlencoded' : True
 		}.get(ctype, False)
+
+	# ----------------------------------------------------------------------------------------------
+
+	def log_message(self, format, *args):
+		message = ' '.join(map(str, args))
+		self.logger.info( message )
+		return

@@ -2,6 +2,7 @@ import logging
 import sqlite3
 import sys
 import os.path
+import xml.etree.ElementTree as ET
 
 
 class CSDataManager():
@@ -10,21 +11,21 @@ class CSDataManager():
 	index = 0
 	connection = None
 	cursor = None
+	logger = logging.getLogger('http_server.data_manager')
+	sql_descriptor = None
 
 	# ----------------------------------------------------------------------------------------
 
-	def __init__(self):
-
-		self.logger = logging.getLogger('http_server')
+	def __init__(self, *args):
 
 		try:
-			# self.logger.debug('Connecting to database.')
+			self.logger.debug('Connecting to database.')
 			self.connection = sqlite3.connect('server.db')
-			# self.logger.debug('Database connection established.')
+			self.logger.debug('Database connection established.')
 		except Exception as e:
 			msg = "Error: Unable to connect to database. " + str(e.args[0])
 			print msg
-			# self.logger.error(msg)
+			self.logger.error(msg)
 			sys.exit(1)
 
 		try:
@@ -34,21 +35,29 @@ class CSDataManager():
 			self.cursor.execute(sql)
 			if (self.cursor.fetchone() is None):
 				self.init_database()
-
 		except Exception as e:
 			self.connection.close()
 			msg = "Error: Unable to initialize data manager. " + str(e.args[0])
 			print msg
-			# self.logger.error(msg)
+			self.logger.error(msg)
+			sys.exit(1)
+
+		try:
+			self.sql_descriptor = self.parse_sql_descriptor('./sql/sql_descriptor.xml')
+		except Exception as e:
+			msg = "Error: Unable to parse SQL descriptor. " + str(e.args[0])
+			print msg
+			self.logger.error(msg)
 			sys.exit(1)
 
 	# ----------------------------------------------------------------------------------------
 
-	def get_records(self, params):
+	def get_records(self, resource, params):
 
 		offset = None
 		count = None
 		sort = None
+		orderby = None
 
 		if (params.has_key('offset')):
 			offset = params['offset'][0]
@@ -59,14 +68,13 @@ class CSDataManager():
 		if (params.has_key('sort')):
 			sort = params['sort'][0]
 
-		sql = '							\
-			select 						\
-				name as name, 			\
-				lastname as lastname 	\
-				FROM names'
+		if (params.has_key('orderby')):
+			orderby = params['orderby'][0]
 
-		if (sort is not None):
-			sql = sql + ' ORDER BY name ' + str(sort)
+		sql = self.sql_descriptor.get(resource).get('get').get('sql')
+
+		if (sort is not None and orderby is not None):
+			sql = sql + ' ORDER BY ' + str(orderby) + ' ' + str(sort)
 
 		if (count is not None):
 			sql = sql + ' LIMIT ' + str(count)
@@ -90,7 +98,7 @@ class CSDataManager():
 
 	# ----------------------------------------------------------------------------------------
 
-	def post_record(self, data):
+	def post_record(self, resource, data):
 
 		if (not data.has_key('name')):
 			raise Exception("Missing parameter 'name'.")
@@ -98,14 +106,17 @@ class CSDataManager():
 		if (not data.has_key('lastname')):
 			raise Exception("Missing parameter 'lastname'.")
 
-		name = data['name'][0]
-		lastname = data['lastname'][0]
+		# name = data['name'][0]
+		# lastname = data['lastname'][0]
 
-		sql = "INSERT INTO names VALUES (\'" 
-		sql += str(name) 
-		sql += "\', \'" 
-		sql += str(lastname) 
-		sql += "\');"
+		# sql = "INSERT INTO names VALUES (\'" 
+		# sql += str(name) 
+		# sql += "\', \'" 
+		# sql += str(lastname) 
+		# sql += "\');"
+		# 
+		
+		sql = self.sql_descriptor.get(resource).get('get').get('sql')
 
 		print 'SQL: ' + sql
 
@@ -117,35 +128,73 @@ class CSDataManager():
 	# ----------------------------------------------------------------------------------------
 
 	def init_database(self):
-		# self.logger.debug('Initializing database.')
-		sql = self.read_sql_script('db.sql').split('\n')
+		self.logger.debug('Initializing database.')
+		sql = self.load_file('sql/create_db.sql').split('\n')
 
 		self.cursor.execute('begin')
 
 		for statement in sql:
-			# self.logger.debug('Executing statement: ' + str(statement))
+			self.logger.debug('Executing statement: ' + str(statement))
 			self.cursor.execute(statement)
 
 		self.connection.commit()
 
-		# self.logger.debug('Database initialization complete.')
+		self.logger.debug('Database initialization complete.')
 
 	# ----------------------------------------------------------------------------------------
 
-	def read_sql_script(self, script_name):
-		if (os.path.isfile(script_name) is False):
-			msg = 'Unable to find database script: ' + str(script_name)
+	def load_file(self, file_name):
+		if (os.path.isfile(file_name) is False):
+			msg = 'Unable to find database script: ' + str(file_name)
 			print msg
-			# self.logger.error(msg)
+			self.logger.error(msg)
 			sys.exit(1)
 
 		try:
-			f = open(script_name)
+			f = open(file_name)
 			with f:
 				data = f.read()
 				return data
 		except IOError as e:
-			msg = "Error: Unable to read sql script " + str(script_name) + ". " + str(e.args[0])
+			msg = "Error: Unable to read sql script " + str(file_name) + ". " + str(e.args[0])
 			print msg
-			# self.logger.error(msg)
+			self.logger.error(msg)
 			sys.exit(1)
+
+	# ----------------------------------------------------------------------------------------
+	
+	def parse_sql_descriptor(self, descriptor_file):
+		tree = ET.parse(descriptor_file)
+		root = tree.getroot()
+
+		children = root.findall('./records')
+
+		items = {}
+
+		for child in children:
+
+			tag = child.tag
+
+			if (items.get(tag, None) is not None):
+				raise Exception("Malformed SQL descriptor")
+
+			get_node = child.find('./get')
+			get_sql = get_node.text
+			
+			post_node = child.find('./post')
+			post_sql = post_node.text
+			post_vars = post_node.get('vars')
+
+			var_list = post_vars.split(' ')
+
+			items[tag] = {
+				'get': {
+					'sql': get_sql
+				},
+				'post': {
+					'sql': post_sql,
+					'vars': var_list
+				}
+			}
+
+		return items

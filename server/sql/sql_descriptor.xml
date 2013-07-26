@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<data>
+	<records>
+	    <get>SELECT name AS name, lastname AS lastname FROM names</get>
+	    <post vars="name lastname">INSERT INTO names ('name', 'lastname') VALUES ('%name%', '%lastname%')</post>
+	</records>
+</data>
