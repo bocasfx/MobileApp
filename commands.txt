@@ -1,0 +1,4 @@
+
+ios-sim launch ./platforms/ios/build/HelloCordova.app --family ipad --stderr console.log --stdout console.log 
+./adb install -r ~/Development/Phonegap/hello/platforms/android/bin/HelloWorld-debug.apk
+./emulator -avd AVD_for_10_1in_WXGA_Tablet
