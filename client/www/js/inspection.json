@@ -1,0 +1,103 @@
+inspectionDefinition: {
+    main: [
+        customerName,
+        shipToAddress,
+        serviceWO,
+        date,
+        specificLocation,
+        manufacturer,
+        type,
+        modelNumber,
+        capacity
+    ],
+    sections: {
+        hoist: {
+            lowerSheavesSprockets: 'Lower Sheaves / Sprockets',
+            lowerSheavesSprocketBearings: 'Lower Sheaves / Sprocket Bearings',
+            blockThrustBearings: 'Block Thrust Bearings',
+            hook: 'Hook',
+            hookLatch: 'Hook Latch',
+            upperSheavesSprockets: 'Upper Sheaves / Sprockets'
+            upperSheavesSprocketBearings: 'Upper Sheaves / Sprocket Bearings'
+            idlerSheaveSprocket: 'Idler Sheave / Sprocket'
+            ropeChain: 'Rope / Chain'
+            ropeChainTerminations: 'Rope / Chain Terminations'
+            ropeGuideThroatsOpening: 'Rope Guide / Throats Opening'
+            ropeDrum: 'Rope Drum'
+            drumBearing: 'Drum Bearing'
+            drumBullGear: 'Drum Bull Gear'
+            gearBoxGears: 'Gear Box Gears'
+            gearBoxBearingsSeals: 'Gear Box Bearings & Seals'
+            brakes: 'Brakes'
+            brakeLinings: 'Brake Linings'
+            hoistStructureConnections: 'Hoist Structure / Connections'
+            motorCouplings: 'Motor Couplings'
+            motor: 'Motor'
+            controlLimits: 'Control Limits'
+            powerOverloadLimits: 'Power / Overload Limits'
+        },
+        trolley: {
+            driveWheels: 'Drive Wheels'
+            trailerWheels: 'Trailer Wheels'
+            wheelGearing: 'Wheel Gearing'
+            pinions: 'Pinions'
+            gearBoxGears: 'Gear Box Gears'
+            gearBoxBearingsSeals: 'Gear Box Bearings & Seals'
+            brakes: 'Brakes'
+            brakeLinings: 'Brake Linings'
+            couplings: 'Couplings'
+            motors: 'Motors'
+            trolleyStructureConnections: 'Trolley Structure / Connections'
+        },
+        bridge: {
+            driveWheels: 'Drive Wheels'
+            trailerWheels: 'Trailer Wheels'
+            wheelGearing: 'Wheel Gearing'
+            pinions: 'Pinions'
+            gearBoxGears: 'Gear Box Gears'
+            gearBoxBearingsSeals: 'Gear Box Bearings & Seals'
+            brakes: 'Brakes'
+            brakeLinings: 'Brake Linings'
+            couplings: 'Couplings'
+            motors: 'Motors'
+            bridgeStructureGirder: 'Bridge Structure - Girder'
+            bridgeStructureEndTrucks: 'Bridge Structure - End Trucks'
+            bridgeStructureConnections: 'Bridge Structure - Connections'
+            walkway: 'Walkway'
+        },
+        runway: {
+            runwayRailRailFasteners: 'Runway Rail / Rail Fasteners'
+            runwayStructureConnections: 'Runway Structure / Connections'
+            endStops: 'End Stops'
+        },
+        electrics: {
+            mainCollectors: 'Main Collectors'
+            trolleyConductors: 'Trolley Conductors'
+            pendantStationRadioControls: 'Pendant Station / Radio Controls'
+            pendantCable: 'Pendant Cable'
+            cabControls: 'Cab Controls'
+            emergencyStopButton: 'Emergency Stop Button'
+            panelsJunctionBoxes: 'Panels / Junction Boxes'
+            climateControl: 'Climate Control'
+            lights: 'Lights'
+            magnetControls: 'Magnet Controls'
+            wiringCondition: 'Wiring Condition'
+            mainlineContactor: 'Mainline Contactor'
+            contactorsVfds: 'Contactors / Vfds'
+            timers: 'Timers'
+            resistors: 'Resistors'
+        },
+        general: {
+            capacitySignsPresent: 'Capacity Signs Present'
+            cleanliness: 'Cleanliness'
+            lubrication: 'Lubrication'
+            safetyGuardsCovers: 'Safety Guards / Covers'
+            limitSwichOperation: 'Limit Swich Operation'
+            safetyAccess: 'Safety Access'
+            others: 'Others'
+            documentation: 'Documentation'
+        }
+    }
+}
+
+
