@@ -4,4 +4,8 @@
 	    <get>SELECT name AS name, lastname AS lastname FROM names</get>
 	    <post vars="name lastname">INSERT INTO names ('name', 'lastname') VALUES ('%name%', '%lastname%')</post>
 	</records>
+	<tests>
+		<get fields="name lastname">SELECT name as testname, lastname as lastname FROM names</get>
+	    <post vars="name lastname">INSERT INTO names ('name', 'lastname') VALUES ('%name%', '%lastname%')</post>
+	</tests>
 </data>

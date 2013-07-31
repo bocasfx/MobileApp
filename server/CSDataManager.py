@@ -3,6 +3,7 @@ import sqlite3
 import sys
 import os.path
 import xml.etree.ElementTree as ET
+from CSDict import CSDict
 
 
 class CSDataManager():
@@ -52,12 +53,15 @@ class CSDataManager():
 
 	# ----------------------------------------------------------------------------------------
 
-	def get_records(self, resource, params):
+	def get_resource(self, resource, params):
 
 		offset = None
 		count = None
 		sort = None
 		orderby = None
+
+		if (params == ""):
+			return {}
 
 		if (params.has_key('offset')):
 			offset = params['offset'][0]
@@ -71,7 +75,9 @@ class CSDataManager():
 		if (params.has_key('orderby')):
 			orderby = params['orderby'][0]
 
-		sql = self.sql_descriptor.get(resource).get('get').get('sql')
+		get_descriptor = self.sql_descriptor.get(resource).get('get')
+		sql = get_descriptor.get('sql')
+		fields = get_descriptor.get('fields').split(' ')
 
 		if (sort is not None and orderby is not None):
 			sql = sql + ' ORDER BY ' + str(orderby) + ' ' + str(sort)
@@ -84,38 +90,35 @@ class CSDataManager():
 
 		self.cursor.execute(sql)
 
-		records = {}
+		records = CSDict()
 		idx = 0
 
-		while True:
-			row = self.cursor.fetchone()
-			if row is None:
-				break
-			records[idx] = {'name': row[0], 'lastname': row[1]}
+		rows = self.cursor.fetchall()
+		print rows
+
+		for row in rows:
+			# Create a dictionary with the fields
+			j = 0
+			for field in fields:
+				records[idx][field] = row[j]
+				print type(row[j])
+				j += 1
+
 			idx += 1
 
 		return records
 
 	# ----------------------------------------------------------------------------------------
 
-	def post_record(self, resource, data):
+	def post_resource(self, resource, data):
 
 		if (not data.has_key('name')):
 			raise Exception("Missing parameter 'name'.")
 
 		if (not data.has_key('lastname')):
 			raise Exception("Missing parameter 'lastname'.")
-
-		# name = data['name'][0]
-		# lastname = data['lastname'][0]
-
-		# sql = "INSERT INTO names VALUES (\'" 
-		# sql += str(name) 
-		# sql += "\', \'" 
-		# sql += str(lastname) 
-		# sql += "\');"
-		# 
 		
+		# TODO
 		sql = self.sql_descriptor.get(resource).get('get').get('sql')
 
 		print 'SQL: ' + sql
@@ -167,29 +170,26 @@ class CSDataManager():
 		tree = ET.parse(descriptor_file)
 		root = tree.getroot()
 
-		children = root.findall('./records')
+		resources = root.findall('./')
 
 		items = {}
 
-		for child in children:
+		for resource in resources:
 
-			tag = child.tag
-
-			if (items.get(tag, None) is not None):
-				raise Exception("Malformed SQL descriptor")
-
-			get_node = child.find('./get')
+			get_node = resource.find('./get')
 			get_sql = get_node.text
-			
-			post_node = child.find('./post')
+			get_fields = get_node.get('fields')
+
+			post_node = resource.find('./post')
 			post_sql = post_node.text
 			post_vars = post_node.get('vars')
 
 			var_list = post_vars.split(' ')
 
-			items[tag] = {
+			items[resource.tag] = {
 				'get': {
-					'sql': get_sql
+					'sql': get_sql,
+					'fields': get_fields
 				},
 				'post': {
 					'sql': post_sql,

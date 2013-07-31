@@ -18,7 +18,9 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 		
 		path = self.path.split('?')
 		url = path[0]
-		params = urlparse.parse_qs(path[1])
+		params = ''
+		if (len(path) > 1):
+		  params = urlparse.parse_qs(path[1])
 		resource = url.split('/')[-1]
 		
 		# Reject invalid urls
@@ -30,7 +32,7 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 
 		try:
 			# Get records from data manager
-			records = self.server.dataManager.get_records(resource, params)
+			records = self.server.dataManager.get_resource(resource, params)
 		except sqlite3.Error as e:
 			self.cs_response(500, 'Internal server error: ' + str(e.args[0]), 'text/html')
 			return
@@ -65,7 +67,7 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 		data = urlparse.parse_qs(self.rfile.read(length), keep_blank_values=1)
 
 		try:
-			self.server.dataManager.post_record(data)
+			self.server.dataManager.post_resource(data)
 		except Exception as e:
 			self.cs_response(400, 'Bad request: ' + str(e.args[0]), 'text/html')
 			return
@@ -101,7 +103,8 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 	
 	def url_is_valid(self, url):
 		return {
-			'/api/v1/records' : True
+			'/api/v1/records': True,
+			'/api/v1/tests': True
 		}.get(url, False)
 
 	# ----------------------------------------------------------------------------------------------
