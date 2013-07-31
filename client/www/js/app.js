@@ -7,10 +7,10 @@ var app = {
     // Application Constructor
     initialize: function() {
 
-        $('#app').append('<div id="buttonGroup1" class="app btn-group-vertical">');
-        $('#buttonGroup1').append('<button id="inspectionsBtn" class="btn btn-default btn-large" type="button">Inspections</button>');
-        $('#buttonGroup1').append('<button id="settingsBtn" class="btn btn-default btn-large" type="button">Settings</button>');
-        $('#inspectionsBtn').on('click', app.sections.inspection);
+        $('#app').append('<div id="mainMenuGroup" class="app btn-group-vertical">');
+        $('#mainMenuGroup').append('<button id="inspectionsBtn" class="btn btn-large">Inspections</button>');
+        $('#mainMenuGroup').append('<button id="settingsBtn" class="btn btn-large">Settings</button>');
+        $('#inspectionsBtn').on('click', app.sections.inspection.create);
     },
 
     clearApp: function() {
@@ -18,85 +18,176 @@ var app = {
     },
 
     topNavigation: function() {
-        $('#app').append('<div id="topNav" class="navbar navbar-fixed-top navbar-inverse">');
-        $('#topNav').append('<a class="navbar-brand" href="#">Title</a>');
-        $('#topNav').append('<ul id="navBar" class="nav navbar-nav">');
-        $('#navBar').append('<li class="active"><a href="#">Home</a></li>');
-        $('#navBar').append('<li><a href="#">Link</a></li>');
-        $('#navBar').append('<li><a href="#">Link</a></li>');
+        $('#app').append('<div id="navigationBar" class="navbar navbar-inverse">');
+        $('#navigationBar').append('<a class="navbar-brand" href="#">CSS</a>');
+        $('#navigationBar').append('<ul id="navigationBarList" class="nav navbar-nav">');
+        $('#navigationBarList').append('<li class="active"><a href="#">Home</a></li>');
+        $('#navigationBarList').append('<li><a href="#">Link</a></li>');
+        $('#navigationBarList').append('<li><a href="#">Link</a></li>');
     },
 
     sections: {
-        inspection: function() {
-            app.clearApp();
-            app.topNavigation();
-            
-            $('#app').append('<div id="inspectionGroup" class="input-group"  style="margin-top:50px;">');
-            $('#inspectionGroup').append('<span class="input-group-addon"><input id="section1CheckBox" type="checkbox"></span>');
-            $('#inspectionGroup').append('<div class="sectionHeader"><h4>Hoist</h4></div>');
-            $('#app').append('<div id="section1" class="well"><div id="section1Select"></div></div>');
 
-            $('#section1Select').ddslick({
-                data: app.ddData,
-                width: 300,
-                imagePosition: "right",
-                selectText: "Select your favorite social network",
-                onSelected: function (data) {
-                    console.log(data);
+        inspection: {
+
+            create: function() {
+                app.clearApp();
+                app.topNavigation();
+                $('#app').append('<div id="spacer" style="margin-top:50px;">');
+                app.sections.inspection.buildNewInspection();
+            },
+
+            buildNewInspection: function(){
+
+                
+                app.sections.inspection.buildMainSection();
+
+                $('#app').append('<div id="sectionWrapper" class="col-12 col-lg-12"></div>')
+                var sectionWrapper = $('#sectionWrapper');
+                var sections = app.inspectionDefinition.sections;
+                
+                
+
+                for (var section in sections) {
+
+                    var groupId = section + 'Group'
+                    var checkBoxId = section + 'CheckBox';
+                    var wellId = section + 'Well';
+
+                    // Sections
+                    sectionWrapper.append('<div id="' + groupId + '" class="input-group">');
+                    $('#' + groupId).append('<span class="input-group-addon"><input id="' + checkBoxId + '" type="checkbox"></span>');
+                    $('#' + groupId).append('<div class="sectionHeader"><h4>' + section + '</h4></div>');
+                    sectionWrapper.append('<div id="' + wellId + '" class="well collapse in"></div>');
+                    $('#' + checkBoxId).on('change', {'wellId': wellId, 'section': section}, app.sections.inspection.toggleWell);
+                    $('#' + wellId).slideToggle();
                 }
-            });
-            $('#section1').slideToggle();
-            $('#section1CheckBox').on('change', {'section': 'section1'}, app.toggleSection);
+            },
 
-            // app.buildControls();
+            buildMainSection: function() {
+
+                var mainItems = app.inspectionDefinition.main;
+
+                var customerName = app.sections.inspection.buildInputGroup('customerName');
+                var shipToAddress = app.sections.inspection.buildInputGroup('shipToAddress');
+                var serviceWO = app.sections.inspection.buildInputGroup('serviceWO');
+                var date = app.sections.inspection.buildInputGroup('date');
+                var specificLocation = app.sections.inspection.buildInputGroup('specificLocation');
+                var manufacturer = app.sections.inspection.buildInputGroup('manufacturer');
+                var type = app.sections.inspection.buildInputGroup('type');
+                var modelNumber = app.sections.inspection.buildInputGroup('modelNumber');
+                var capacit = app.sections.inspection.buildInputGroup('capacit');
+
+                $('#app').append(
+                    $('<div class="col-12 col-lg-12"></div>').append(
+                        $('<div class="col-lg-5 input-group">' + $(customerName).html() + '</div>')
+                    ).append(
+                        $('<div class="col-lg-1"></div>')
+                    ).append(
+                        $('<div class="col-lg-5 input-group">' + $(shipToAddress).html() + '</div>')
+                    )
+                );
+
+                $('#app').append(
+                    $('<div class="col-12 col-lg-12"></div>').append(
+                        $('<div class="col-lg-5 input-group">' + $(customerName).html() + '</div>')
+                    ).append(
+                        $('<div class="col-lg-1"></div>')
+                    ).append(
+                        $('<div class="col-lg-5 input-group">' + $(shipToAddress).html() + '</div>')
+                    )
+                );
+
+                
+
+                // $('#app').append('<div id="mainSection"></div>')
+
+                // var mainSectionObj = $('#mainSection');
+
+                // for (var item in mainItems) {
+
+                //     var itemInput = item + 'Input';
+                //     var label = app.inspectionDefinition.main[item];
+                //     // Main
+                //     mainSectionObj.append('<div class="input-group"><span class="input-group-addon">' + label + '</span><input type="text" class="form-control" id="' + itemInput + '" placeholder="' + label + '"></div>');
+                // }
+            },
+
+            buildInputGroup: function( item ) {
+                var itemInput = item + 'Input';
+                var label = app.inspectionDefinition.main[item];
+                return $('<div><span class="input-group-addon">' + label + '</span><input type="text" class="form-control" id="' + itemInput + '" placeholder="' + label + '"></div>');
+            },
+
+            toggleWell: function( event ) {
+                
+                var wellId = String(event.data.wellId);
+                var section = String(event.data.section);
+                var wellObj = $('#' + wellId)
+
+                // Create the ddSlick only if it hasn't been created yet.
+                if ($('#' + wellId + ' .dd-container').size() == 0) {
+                    
+                    for (var subsection in app.inspectionDefinition.sections[section]) {
+                        var ddSlickId = subsection + 'DdSlick';
+                        
+                        wellObj.append('<div id="' + ddSlickId + '"></div>')
+
+                        var ddData = [
+                            {
+                                text: subsection,
+                                value: 0,
+                                selected: true,
+                                description: ""
+                            },
+                            {
+                                text: subsection,
+                                value: 1,
+                                selected: false,
+                                description: "Pass",
+                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/facebook-icon-32.png"
+                            },
+                            {
+                                text: subsection,
+                                value: 2,
+                                selected: false,
+                                description: "Fail",
+                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/twitter-icon-32.png"
+                            },
+                            {
+                                text: subsection,
+                                value: 3,
+                                selected: false,
+                                description: "Not applicable",
+                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/linkedin-icon-32.png"
+                            },
+                            {
+                                text: subsection,
+                                value: 4,
+                                selected: false,
+                                description: "Dash",
+                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/foursquare-icon-32.png"
+                            }
+                        ];
+
+                        // Create the ddSlick thingy
+                        $('#' + ddSlickId).ddslick({
+                            data: ddData,
+                            width: 300,
+                            imagePosition: "right",
+                            selectText: subsection,
+                            showSelectedHTML: true,
+                            onSelected: function (data) {
+                                //console.log(data);
+                            }
+                        });
+                    }
+                }
+
+                $('#' + wellId).slideToggle();
+            }
         }
     },
-
-    toggleSection: function( event ) {
-        console.log('toggle');
-        var section = String(event.data.section);
-        $('#' + section).slideToggle();
-    },
-
-    buildControls: function(){
-
-        var sections = app.inspectionDefinition.sections;
-
-        for (section in sections) {
-            console.log(section);
-        }
-    },
-
-    ddData: [
-        {
-            text: "Facebook",
-            value: 1,
-            selected: false,
-            description: "Description with Facebook",
-            imageSrc: "http://dl.dropbox.com/u/40036711/Images/facebook-icon-32.png"
-        },
-        {
-            text: "Twitter",
-            value: 2,
-            selected: false,
-            description: "Description with Twitter",
-            imageSrc: "http://dl.dropbox.com/u/40036711/Images/twitter-icon-32.png"
-        },
-        {
-            text: "LinkedIn",
-            value: 3,
-            selected: true,
-            description: "Description with LinkedIn",
-            imageSrc: "http://dl.dropbox.com/u/40036711/Images/linkedin-icon-32.png"
-        },
-        {
-            text: "Foursquare",
-            value: 4,
-            selected: false,
-            description: "Description with Foursquare",
-            imageSrc: "http://dl.dropbox.com/u/40036711/Images/foursquare-icon-32.png"
-        }
-    ],
 
     inspectionDefinition: {
         main: {
@@ -199,5 +290,4 @@ var app = {
             }
         }
     }
-
 };

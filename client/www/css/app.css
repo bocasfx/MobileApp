@@ -117,3 +117,8 @@ h1 {
 .sectionHeader {
     margin-left: 10px;
 }
+
+.cs-well {
+    min-height: 0;
+    padding: 0;
+}
