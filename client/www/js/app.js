@@ -53,7 +53,7 @@ var app = {
                 }
 
                 // Sections
-                $('#app').append('<div id="sectionWrapper" class="col-12 col-lg-12"></div>')
+                $('#app').append('<div id="sectionWrapper" class="col-10 col-lg-10 col-offset-1"></div>')
                 var sectionWrapper = $('#sectionWrapper');
                 var sections = app.inspectionDefinition.sections;
 
@@ -103,7 +103,7 @@ var app = {
 
                         var ddData = [
                             {
-                                text: subsection,
+                                text: app.inspectionDefinition.sections[section][subsection],
                                 value: 0,
                                 selected: true,
                                 description: ""
@@ -141,7 +141,7 @@ var app = {
                         // Create the ddSlick thingy
                         $('#' + ddSlickId).ddslick({
                             data: ddData,
-                            width: 450,
+                            width: 475,
                             imagePosition: "right",
                             selectText: subsection,
                             showSelectedHTML: true,
