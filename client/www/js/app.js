@@ -53,7 +53,7 @@ var app = {
                 }
 
                 // Sections
-                $('#app').append('<div id="sectionWrapper" class="col-10 col-lg-10 col-offset-1"></div>')
+                $('#app').append('<div id="sectionWrapper" class="col-lg-10 col-offset-1"></div>')
                 var sectionWrapper = $('#sectionWrapper');
                 var sections = app.inspectionDefinition.sections;
 
@@ -67,7 +67,7 @@ var app = {
                     sectionWrapper.append('<div id="' + groupId + '" class="input-group">');
                     $('#' + groupId).append('<span class="input-group-addon"><input id="' + checkBoxId + '" type="checkbox"></span>');
                     $('#' + groupId).append('<div class="sectionHeader"><h4>' + section + '</h4></div>');
-                    sectionWrapper.append('<div id="' + wellId + '" class="well collapse in"></div>');
+                    sectionWrapper.append('<div id="' + wellId + '" class="well collapse in row"></div>');
                     $('#' + checkBoxId).on('change', {'wellId': wellId, 'section': section}, app.sections.inspection.toggleWell);
                     $('#' + wellId).slideToggle();
                 }
@@ -80,14 +80,11 @@ var app = {
                 var wellObj = $('#' + wellId)
 
                 // Create the ddSlick only if it hasn't been created yet.
-                if ($('#' + wellId + ' .dd-container').size() == 0) {
+                if ($('#' + wellId + ' > div').size() == 0) {
 
                     var idx = 0;
                     var rowId = 'row' + section + idx;
 
-                    // wellObj.append('<div id="' + rowId + '" class="row"></div>');
-                    // rowObj = $('#' + rowId);
-                    
                     for (var subsection in app.inspectionDefinition.sections[section]) {
                         var ddSlickId = subsection + 'DdSlick';
 
@@ -101,59 +98,45 @@ var app = {
                         
                         rowObj.append('<div class="col-lg-6 mainInput"><div id="' + ddSlickId + '"></div></div>')
 
-                        var ddData = [
+                        function format( value ) {
+                            console.log(value);
+                            return '<img src="http://dl.dropbox.com/u/40036711/Images/facebook-icon-32.png"/> ' + value.text;
+                        };
+
+                        var label = app.inspectionDefinition.sections[section][subsection];
+
+                        var selectData = [
                             {
-                                text: app.inspectionDefinition.sections[section][subsection],
-                                value: 0,
-                                selected: true,
-                                description: ""
-                            },
-                            {
-                                text: subsection,
-                                value: 1,
-                                selected: false,
-                                description: "Pass",
-                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/facebook-icon-32.png"
-                            },
-                            {
-                                text: subsection,
-                                value: 2,
-                                selected: false,
-                                description: "Fail",
-                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/twitter-icon-32.png"
-                            },
-                            {
-                                text: subsection,
-                                value: 3,
-                                selected: false,
-                                description: "Not applicable",
-                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/linkedin-icon-32.png"
-                            },
-                            {
-                                text: subsection,
-                                value: 4,
-                                selected: false,
-                                description: "Dash",
-                                imageSrc: "http://dl.dropbox.com/u/40036711/Images/foursquare-icon-32.png"
+                                id:0,
+                                text: label 
+                            },{
+                                id:1,
+                                text: label
+                            },{
+                                id:2,
+                                text: label
+                            },{
+                                id:3,
+                                text: label
+                            },{
+                                id:4,
+                                text: label
                             }
                         ];
-
-                        // Create the ddSlick thingy
-                        $('#' + ddSlickId).ddslick({
-                            data: ddData,
-                            width: 475,
-                            imagePosition: "right",
-                            selectText: subsection,
-                            showSelectedHTML: true,
-                            onSelected: function (data) {
-                                //console.log(data);
-                            }
+                        
+                        $("#" + ddSlickId).select2({
+                            data: selectData,
+                            width: "100%",
+                            formatSelection: format,
+                            formatResult: format,
+                            minimumResultsForSearch: 99,
+                            placeholder: label,
+                            allowClear: true
                         });
                     }
-
-                    // $('#' + wellId + ' .dd-container').css('margin-bottom', '10px');
                 }
 
+                $('.select2-chosen').css('margin-top', '5px');
                 $('#' + wellId).slideToggle();
             }
         }
