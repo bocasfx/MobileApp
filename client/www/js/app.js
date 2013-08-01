@@ -39,14 +39,23 @@ var app = {
 
             buildNewInspection: function(){
 
-                
-                app.sections.inspection.buildMainSection();
+                // Main
+                var mainItems = app.inspectionDefinition.main;
 
+                $('#app').append('<form id="mainForm" class="form-horizontal">');
+                $('#mainForm').append('<div id="formGroup" class="form-group">');
+
+                for (item in mainItems) {
+                    var label = app.inspectionDefinition.main[item];
+                    var itemInput = item + 'Input';
+                    $('#formGroup').append('<label for="' + itemInput + '" class="col-lg-2 control-label col-offset-1">' + label + '</label>');
+                    $('#formGroup').append('<div class="col-lg-7 mainInput"><input type="text" class="form-control" id="' + itemInput + '" placeholder=""></div>');
+                }
+
+                // Sections
                 $('#app').append('<div id="sectionWrapper" class="col-12 col-lg-12"></div>')
                 var sectionWrapper = $('#sectionWrapper');
                 var sections = app.inspectionDefinition.sections;
-                
-                
 
                 for (var section in sections) {
 
@@ -64,61 +73,6 @@ var app = {
                 }
             },
 
-            buildMainSection: function() {
-
-                var mainItems = app.inspectionDefinition.main;
-
-                var customerName = app.sections.inspection.buildInputGroup('customerName');
-                var shipToAddress = app.sections.inspection.buildInputGroup('shipToAddress');
-                var serviceWO = app.sections.inspection.buildInputGroup('serviceWO');
-                var date = app.sections.inspection.buildInputGroup('date');
-                var specificLocation = app.sections.inspection.buildInputGroup('specificLocation');
-                var manufacturer = app.sections.inspection.buildInputGroup('manufacturer');
-                var type = app.sections.inspection.buildInputGroup('type');
-                var modelNumber = app.sections.inspection.buildInputGroup('modelNumber');
-                var capacit = app.sections.inspection.buildInputGroup('capacit');
-
-                $('#app').append(
-                    $('<div class="col-12 col-lg-12"></div>').append(
-                        $('<div class="col-lg-5 input-group">' + $(customerName).html() + '</div>')
-                    ).append(
-                        $('<div class="col-lg-1"></div>')
-                    ).append(
-                        $('<div class="col-lg-5 input-group">' + $(shipToAddress).html() + '</div>')
-                    )
-                );
-
-                $('#app').append(
-                    $('<div class="col-12 col-lg-12"></div>').append(
-                        $('<div class="col-lg-5 input-group">' + $(customerName).html() + '</div>')
-                    ).append(
-                        $('<div class="col-lg-1"></div>')
-                    ).append(
-                        $('<div class="col-lg-5 input-group">' + $(shipToAddress).html() + '</div>')
-                    )
-                );
-
-                
-
-                // $('#app').append('<div id="mainSection"></div>')
-
-                // var mainSectionObj = $('#mainSection');
-
-                // for (var item in mainItems) {
-
-                //     var itemInput = item + 'Input';
-                //     var label = app.inspectionDefinition.main[item];
-                //     // Main
-                //     mainSectionObj.append('<div class="input-group"><span class="input-group-addon">' + label + '</span><input type="text" class="form-control" id="' + itemInput + '" placeholder="' + label + '"></div>');
-                // }
-            },
-
-            buildInputGroup: function( item ) {
-                var itemInput = item + 'Input';
-                var label = app.inspectionDefinition.main[item];
-                return $('<div><span class="input-group-addon">' + label + '</span><input type="text" class="form-control" id="' + itemInput + '" placeholder="' + label + '"></div>');
-            },
-
             toggleWell: function( event ) {
                 
                 var wellId = String(event.data.wellId);
@@ -127,11 +81,25 @@ var app = {
 
                 // Create the ddSlick only if it hasn't been created yet.
                 if ($('#' + wellId + ' .dd-container').size() == 0) {
+
+                    var idx = 0;
+                    var rowId = 'row' + section + idx;
+
+                    // wellObj.append('<div id="' + rowId + '" class="row"></div>');
+                    // rowObj = $('#' + rowId);
                     
                     for (var subsection in app.inspectionDefinition.sections[section]) {
                         var ddSlickId = subsection + 'DdSlick';
+
+                        if (idx % 2 == 0) {
+                            var rowId = 'row' + section + idx;
+                            wellObj.append('<div id="' + rowId + '" class="row"></div>');
+                            var rowObj = $('#' + rowId);
+                        }
+
+                        idx += 1;
                         
-                        wellObj.append('<div id="' + ddSlickId + '"></div>')
+                        rowObj.append('<div class="col-lg-6 mainInput"><div id="' + ddSlickId + '"></div></div>')
 
                         var ddData = [
                             {
@@ -173,7 +141,7 @@ var app = {
                         // Create the ddSlick thingy
                         $('#' + ddSlickId).ddslick({
                             data: ddData,
-                            width: 300,
+                            width: 450,
                             imagePosition: "right",
                             selectText: subsection,
                             showSelectedHTML: true,
@@ -182,6 +150,8 @@ var app = {
                             }
                         });
                     }
+
+                    // $('#' + wellId + ' .dd-container').css('margin-bottom', '10px');
                 }
 
                 $('#' + wellId).slideToggle();
