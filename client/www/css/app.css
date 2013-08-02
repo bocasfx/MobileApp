@@ -138,3 +138,23 @@ h1 {
   max-height: 150px;
   overflow-y: auto;
 }
+
+.cs-glyphicon-ok {
+    color: green;
+    margin-right: 15px;
+}
+
+.cs-glyphicon-remove {
+    color: red;
+    margin-right: 15px;
+}
+
+.cs-glyphicon-minus {
+    color: blue;
+    margin-right: 15px;
+}
+
+.cs-glyphicon-asterisk {
+    color: orange;
+    margin-right: 15px;
+}

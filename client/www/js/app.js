@@ -98,37 +98,45 @@ var app = {
                         
                         rowObj.append('<div class="col-lg-6 mainInput"><div id="' + ddSlickId + '"></div></div>')
 
-                        function format( value ) {
-                            console.log(value);
-                            return '<img src="http://dl.dropbox.com/u/40036711/Images/facebook-icon-32.png"/> ' + value.text;
-                        };
-
                         var label = app.inspectionDefinition.sections[section][subsection];
 
+                        function formatResult( value ) {
+                            return '<span class="glyphicon ' + value.text + ' cs-' + value.text + '"></span>' + iconText[value.text];
+                        };
+
+                        function formatSelection( value ) {
+                            return  '<span class="glyphicon ' + value.text + ' cs-' + value.text + '"></span>' + label;
+                        };
+
+                        var iconText = {
+                            'glyphicon-ok': 'OK',
+                            'glyphicon-remove': 'FAIL',
+                            'glyphicon-minus': 'MINUS',
+                            'glyphicon-asterisk': 'ASTERISK'
+                        }
+
+                        
                         var selectData = [
                             {
                                 id:0,
-                                text: label 
+                                text: 'glyphicon-ok' 
                             },{
                                 id:1,
-                                text: label
+                                text: 'glyphicon-remove'
                             },{
                                 id:2,
-                                text: label
+                                text: 'glyphicon-minus'
                             },{
                                 id:3,
-                                text: label
-                            },{
-                                id:4,
-                                text: label
+                                text: 'glyphicon-asterisk'
                             }
                         ];
                         
                         $("#" + ddSlickId).select2({
                             data: selectData,
                             width: "100%",
-                            formatSelection: format,
-                            formatResult: format,
+                            formatSelection: formatSelection,
+                            formatResult: formatResult,
                             minimumResultsForSearch: 99,
                             placeholder: label,
                             allowClear: true
@@ -136,7 +144,7 @@ var app = {
                     }
                 }
 
-                $('.select2-chosen').css('margin-top', '5px');
+                $('.select2-chosen').css('margin-top', '10px');
                 $('#' + wellId).slideToggle();
             }
         }
