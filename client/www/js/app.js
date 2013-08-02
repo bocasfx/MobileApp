@@ -59,28 +59,30 @@ var app = {
 
                 for (var section in sections) {
 
-                    var groupId = section + 'Group'
-                    var checkBoxId = section + 'CheckBox';
-                    var wellId = section + 'Well';
+                    var groupId = section + 'Group';
+                    var panelId = section + 'Well';
+                    var headingId = section + 'Heading';
 
                     // Sections
-                    sectionWrapper.append('<div id="' + groupId + '" class="input-group">');
-                    $('#' + groupId).append('<span class="input-group-addon"><input id="' + checkBoxId + '" type="checkbox"></span>');
-                    $('#' + groupId).append('<div class="sectionHeader"><h4>' + section + '</h4></div>');
-                    sectionWrapper.append('<div id="' + wellId + '" class="well collapse in row"></div>');
-                    $('#' + checkBoxId).on('change', {'wellId': wellId, 'section': section}, app.sections.inspection.toggleWell);
-                    $('#' + wellId).slideToggle();
+                    sectionWrapper.append('<div id="' + groupId + '" class="panel">');
+                    $('#' + groupId).append('<div id="' + headingId + '" class="panel-heading"><h4 class="panel-title"><span class="glyphicon glyphicon-unchecked headingIcon"></span>' + section + '</h4></div>');
+                    $('#' + groupId).append('<div id="' + panelId + '" class="collapse in row sectionPanel"></div>');
+                    $('#' + headingId).css('cursor', 'pointer');
+                    $('#' + headingId).on('click', {'panelId': panelId, 'section': section, 'headingId': headingId}, app.sections.inspection.toggleWell);
+                    $('#' + panelId).slideToggle();
                 }
             },
 
             toggleWell: function( event ) {
                 
-                var wellId = String(event.data.wellId);
+                var panelId = String(event.data.panelId);
                 var section = String(event.data.section);
-                var wellObj = $('#' + wellId)
+                var headingId = String(event.data.headingId);
+
+                var wellObj = $('#' + panelId)
 
                 // Create the ddSlick only if it hasn't been created yet.
-                if ($('#' + wellId + ' > div').size() == 0) {
+                if ($('#' + panelId + ' > div').size() == 0) {
 
                     var idx = 0;
                     var rowId = 'row' + section + idx;
@@ -145,7 +147,9 @@ var app = {
                 }
 
                 $('.select2-chosen').css('margin-top', '10px');
-                $('#' + wellId).slideToggle();
+                $('#' + headingId + ' h4 span').toggleClass('glyphicon-check');
+                $('#' + headingId + ' h4 span').toggleClass('glyphicon-unchecked');
+                $('#' + panelId).slideToggle();
             }
         }
     },
