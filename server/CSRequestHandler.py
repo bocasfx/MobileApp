@@ -28,8 +28,6 @@ class CSRequestHandler(BaseHTTPRequestHandler):
             self.cs_response(403, 'Invalid URL')
             return
 
-        
-
         try:
             # Get records from data manager
             records = self.server.dataManager.get_resource(resource, params)
@@ -89,7 +87,8 @@ class CSRequestHandler(BaseHTTPRequestHandler):
     # ----------------------------------------------------------------------------------------------
     
     def do_DELETE(self):
-        pass
+        self.logger.debug("----- SOMETHING WAS DELETED!! ------")
+        self.send_response(200)
 
     # ----------------------------------------------------------------------------------------------
 

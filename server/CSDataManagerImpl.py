@@ -13,14 +13,19 @@ class CSDataManagerImpl(CSDataManager):
     # ----------------------------------------------------------------------------------------
 
     def get_resource(self, resource, params):
+        
+
+        if (resource == 'records'):
+            return self.get_records(params)
+
+        return {}
+
+    def get_records(self, params):
 
         offset = None
         count = None
         sort = None
         orderby = None
-
-        if (params == ""):
-            return {}
 
         if (params.has_key('offset')):
             offset = params['offset'][0]
@@ -34,9 +39,8 @@ class CSDataManagerImpl(CSDataManager):
         if (params.has_key('orderby')):
             orderby = params['orderby'][0]
 
-        get_descriptor = self.sql_descriptor.get(resource).get('get')
-        sql = get_descriptor.get('sql')
-        fields = get_descriptor.get('fields').split(' ')
+        fields = ['name', 'lastname']
+        sql = 'SELECT name AS name, lastname AS lastname FROM names'
 
         if (sort is not None and orderby is not None):
             sql = sql + ' ORDER BY ' + str(orderby) + ' ' + str(sort)
@@ -71,21 +75,22 @@ class CSDataManagerImpl(CSDataManager):
 
     def post_resource(self, resource, data):
 
-        if (not data.has_key('name')):
-            raise Exception("Missing parameter 'name'.")
+        # if (not data.has_key('name')):
+        #     raise Exception("Missing parameter 'name'.")
 
-        if (not data.has_key('lastname')):
-            raise Exception("Missing parameter 'lastname'.")
+        # if (not data.has_key('lastname')):
+        #     raise Exception("Missing parameter 'lastname'.")
         
-        # TODO
-        sql = self.sql_descriptor.get(resource).get('get').get('sql')
+        # # TODO
+        # sql = self.sql_descriptor.get(resource).get('get').get('sql')
 
-        print 'SQL: ' + sql
+        # print 'SQL: ' + sql
 
-        self.cursor.execute(sql)
-        self.connection.commit()
+        # self.cursor.execute(sql)
+        # self.connection.commit()
 
-        return
+        # return
+        pass
 
     
     
