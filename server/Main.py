@@ -56,7 +56,7 @@ def main():
         help='HTTP server IP')
 
     parser.add_argument('--loglevel',
-        default='error',
+        default='debug',
         help='Sets the log level. Options are "error", "warn", "info", "debug"')
 
     args = parser.parse_args()
@@ -67,7 +67,6 @@ def main():
 
     server_address = (args.ip, args.port)
     httpd = CSHTTPServer(server_address, CSRequestHandler, dataManager)
-    print 'HTTP server running...'
     httpd.serve_forever()
 
 # ----------------------------------------------------------------------------------------------

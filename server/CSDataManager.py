@@ -20,10 +20,10 @@ class CSDataManager():
         try:
             self.logger.debug('Connecting to database.')
             self.connection = sqlite3.connect('server.db')
+            self.connection.row_factory = sqlite3.Row
             self.logger.debug('Database connection established.')
         except Exception as e:
             msg = "Error: Unable to connect to database. " + str(e.args[0])
-            print msg
             self.logger.error(msg)
             sys.exit(1)
 
@@ -37,20 +37,17 @@ class CSDataManager():
         except Exception as e:
             self.connection.close()
             msg = "Error: Unable to initialize data manager. " + str(e.args[0])
-            print msg
             self.logger.error(msg)
             sys.exit(1)
 
     # ----------------------------------------------------------------------------------------
 
     def get_resource(self, resource, params):
-
         raise Exception("Method must be overriden")
 
     # ----------------------------------------------------------------------------------------
 
     def post_resource(self, resource, data):
-
         raise Exception("Method must be overriden")
 
     # ----------------------------------------------------------------------------------------
@@ -74,7 +71,6 @@ class CSDataManager():
     def load_file(self, file_name):
         if (os.path.isfile(file_name) is False):
             msg = 'Unable to find database script: ' + str(file_name)
-            print msg
             self.logger.error(msg)
             sys.exit(1)
 
@@ -85,6 +81,5 @@ class CSDataManager():
                 return data
         except IOError as e:
             msg = "Error: Unable to read sql script " + str(file_name) + ". " + str(e.args[0])
-            print msg
             self.logger.error(msg)
             sys.exit(1)

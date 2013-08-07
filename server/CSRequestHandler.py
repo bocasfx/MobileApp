@@ -18,7 +18,7 @@ class CSRequestHandler(BaseHTTPRequestHandler):
         
         path = self.path.split('?')
         url = path[0]
-        params = ''
+        params = {}
         if (len(path) > 1):
           params = urlparse.parse_qs(path[1])
         resource = url.split('/')[-1]
@@ -46,6 +46,7 @@ class CSRequestHandler(BaseHTTPRequestHandler):
 
         path = self.path.split('?')
         url = path[0]
+        resource = url.split('/')[-1]
         
         # Reject invalid urls
         if (self.url_is_valid(url) is False):
@@ -65,14 +66,13 @@ class CSRequestHandler(BaseHTTPRequestHandler):
         data = urlparse.parse_qs(self.rfile.read(length), keep_blank_values=1)
 
         try:
-            self.server.dataManager.post_resource(data)
+            self.server.dataManager.post_resource(resource, data)
         except Exception as e:
             self.cs_response(400, 'Bad request: ' + str(e.args[0]), 'text/html')
             return
 
         self.logger.info('Record has been added successfully')
         
-
         self.send_response(200)
         self.end_headers()
 
@@ -109,9 +109,9 @@ class CSRequestHandler(BaseHTTPRequestHandler):
     # ----------------------------------------------------------------------------------------------
 
     def ctype_is_valid(self, ctype):
-        return {
-            'application/json, application/x-www-form-urlencoded' : True
-        }.get(ctype, False)
+        if (ctype == 'application/json, application/x-www-form-urlencoded'):
+            return True
+        return False
 
     # ----------------------------------------------------------------------------------------------
 
